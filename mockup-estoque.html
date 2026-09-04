@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="claro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estoque MiauStore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  /* paleta de cores */
+  --page:#f8f6fa;
+  --surface:#ffffff;
+  --ink:#241f33;
+  --muted:#665f7a;
+  --faint:#9a92ac;
+  --line:#e7e1ee;
+
+  --azul:#567599;        
+  --azul-soft:#e6eef8;
+  --azulclaro:#227885;   
+  --azulclaro-soft:#e1f2f3;
+  --rosa:#a94f6c;        
+  --rosa-soft:#fbebf0;
+  --terracota:#b8462f;   
+  --terracota-soft:#f8e9e5;
+  --verde:#5f7d46;       
+  --verde-soft:#eef3e6;
+  --lavanda:#665a96;     
+  --lavanda-soft:#eeecf7;
+
+  --accent:var(--azul);
+  --accent-soft:var(--azul-soft);
+  --alert:var(--terracota);
+  --alert-soft:var(--terracota-soft);
+
+  --radius:14px;
+  --radius-sm:9px;
+  --pill:999px;
+  --shadow:0 1px 2px rgba(36,31,51,.04), 0 10px 24px -16px rgba(36,31,51,.22);
+}
+
+html[data-tema="escuro"]{
+  --page:#1c1826;
+  --surface:#252032;
+  --ink:#f1eef7;
+  --muted:#908c9c;
+  --faint:#867d99;
+  --line:#39324a;
+
+  --azul:#7ea0c7;
+  --azul-soft:#2a3648;
+  --azulclaro:#7fd2db;
+  --azulclaro-soft:#1e363a;
+  --rosa:#e6a3bc;
+  --rosa-soft:#3a2530;
+  --terracota:#ba2c46;
+  --terracota-soft:rgba(66, 37, 51, 0.712);
+  --verde:#a7c187;
+  --verde-soft:#2b3322;
+  --lavanda:#b7ace0;
+  --lavanda-soft:#2c2740;
+
+  --shadow:0 1px 2px rgba(0,0,0,.2), 0 10px 24px -16px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+html{font-size:14px}
+body{
+  margin:0;
+  background:var(--page);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  font-size:1rem;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  transition:background .2s ease, color .2s ease;
+}
+.num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+.wrap{max-width:1080px;margin:0 auto;padding:2.4rem 1.4rem 4rem}
+
+/* ---------- cabeçalho ---------- */
+header{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding-bottom:1.1rem;margin-bottom:1.3rem;border-bottom:1px solid var(--line);
+}
+.marca{display:flex;align-items:center;gap:.7rem}
+.monograma{
+  width:2.4rem;height:2.4rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:var(--accent-soft);color:var(--accent);
+  font-family:"Fraunces",serif;font-weight:600;font-size:1.15rem;
+}
+header h1{margin:0;font-family:"Fraunces",serif;font-weight:600;font-size:1.6rem;letter-spacing:-.01em}
+header p{margin:.15rem 0 0;color:var(--muted);font-size:.85rem}
+
+.acessibilidade{
+  display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;
+  padding-bottom:.2rem;
+}
+.acessibilidade .grupo{
+  display:flex;align-items:center;gap:2px;border:1px solid var(--line);
+  border-radius:var(--pill);padding:2px;background:var(--surface);
+}
+.acessibilidade button{
+  border:none;background:transparent;color:var(--muted);
+  padding:.35rem .7rem;border-radius:var(--pill);font-size:.8rem;cursor:pointer;
+  transition:background .15s ease, color .15s ease;
+}
+.acessibilidade button:hover{background:var(--accent-soft);color:var(--accent)}
+.acessibilidade button:disabled{opacity:.35;cursor:default;background:none;color:var(--muted)}
+.acessibilidade button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.acessibilidade .rotulo{font-size:.72rem;color:var(--faint)}
+
+/* ---------- barra de busca ---------- */
+.toolbar{display:flex;gap:.7rem;align-items:center;margin:0 0 1.1rem;flex-wrap:wrap}
+.toolbar .grow{flex:1;min-width:200px;position:relative}
+.toolbar .grow::before{
+  content:"⌕";position:absolute;left:.8rem;top:50%;transform:translateY(-50%);
+  color:var(--faint);font-size:1rem;pointer-events:none;
+}
+
+input,select{
+  font:inherit;width:100%;padding:.68rem .8rem;
+  background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);border-radius:var(--radius-sm);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.toolbar .grow input{padding-left:2.3rem}
+input:hover,select:hover{border-color:var(--faint)}
+input:focus-visible,select:focus-visible,button:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;
+}
+
+button{
+  font:inherit;cursor:pointer;border-radius:var(--pill);
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  padding:.62rem 1.1rem;
+  transition:background .15s ease, border-color .15s ease, color .15s ease;
+}
+button:hover{border-color:var(--faint)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+button.primary:hover{background:var(--azul);filter:brightness(0.92)}
+
+/* ---------- tabela ---------- */
+.panel-table{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+}
+table{width:100%;border-collapse:collapse}
+th{
+  text-align:left;font-weight:500;font-size:.8rem;color:var(--muted);
+  padding:.8rem .9rem;background:var(--page);border-bottom:1px solid var(--line);
+}
+td{padding:.78rem .9rem;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr{transition:background .15s ease}
+tbody tr:hover{background:var(--page)}
+tbody tr:last-child td{border-bottom:none}
+.r{text-align:right}
+.sub{color:var(--faint);font-size:.85rem}
+
+tr.baixo td{background:var(--alert-soft)}
+tr.baixo:hover td{filter:brightness(0.97)}
+tr.baixo .saldo{color:var(--alert);font-weight:600}
+.flag{
+  display:inline-block;margin-left:.45rem;font-size:.7rem;color:var(--alert);
+  border:1px solid var(--alert);border-radius:var(--pill);padding:.1rem .55rem;vertical-align:1px;
+}
+
+/* ---------- "categoria" ---------- */
+.chip{
+  display:inline-block;padding:.15rem .6rem;border-radius:var(--pill);
+  font-size:.78rem;font-weight:500;border:1px solid transparent;
+}
+.chip-azul{background:var(--azul-soft);color:var(--azul)}
+.chip-azulclaro{background:var(--azulclaro-soft);color:var(--azulclaro)}
+.chip-rosa{background:var(--rosa-soft);color:var(--rosa)}
+.chip-verde{background:var(--verde-soft);color:var(--verde)}
+
+.acoes{white-space:nowrap;text-align:right}
+.acoes button{
+  padding:.4rem .55rem;margin-left:2px;font-size:.78rem;line-height:1;
+  border-color:transparent;background:transparent;color:var(--muted);
+  border-radius:var(--radius-sm);
+}
+.acoes button:hover{background:var(--accent-soft);border-color:var(--line);color:var(--accent)}
+.acoes button.dan:hover{background:var(--alert-soft);color:var(--alert)}
+
+.totais{
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem;
+  padding:.78rem .9rem;background:var(--page);border-top:1px solid var(--line);
+  font-size:.85rem;color:var(--muted);
+}
+.totais strong{color:var(--ink);font-weight:600}
+
+/* ---------- legenda ---------- */
+.legenda{
+  display:flex;flex-wrap:wrap;gap:.9rem;align-items:center;
+  margin-top:.8rem;padding:.6rem .9rem;
+  border:1px solid var(--line);border-radius:var(--radius-sm);
+  font-size:.78rem;color:var(--muted);background:var(--surface);
+}
+.legenda .titulo-legenda{font-weight:600;color:var(--ink);margin-right:.2rem}
+.legenda .item{display:flex;align-items:center;gap:.4rem}
+.legenda .ponto{width:.6rem;height:.6rem;border-radius:50%;flex-shrink:0}
+.legenda .ponto.azul{background:var(--azul)}
+.legenda .ponto.azulclaro{background:var(--azulclaro)}
+.legenda .ponto.rosa{background:var(--rosa)}
+.legenda .ponto.verde{background:var(--verde)}
+.legenda .ponto.alerta{background:var(--alert)}
+
+/* ---------- painel inferior ---------- */
+.painel{
+  margin-top:1.1rem;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:1.3rem 1.4rem 1.4rem;box-shadow:var(--shadow);
+  animation:surgir .22s ease both;
+}
+.painel[hidden]{display:none}
+.painel-topo{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
+.painel-topo h2{margin:0;font-family:"Fraunces",serif;font-size:1.15rem;font-weight:600}
+.painel-topo button{
+  border:1px solid var(--line);background:var(--surface);color:var(--muted);
+  width:1.9rem;height:1.9rem;padding:0;border-radius:50%;font-size:1rem;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+}
+.painel-topo button:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft)}
+.contexto{
+  background:var(--accent-soft);border-radius:var(--radius-sm);
+  padding:.65rem .85rem;margin:.8rem 0 1.1rem;font-size:.85rem;color:var(--accent);
+}
+.grid{display:grid;gap:.85rem;margin-bottom:1rem}
+[hidden]{display:none !important}
+.g2{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.3rem}
+.dica{font-size:.78rem;color:var(--faint);margin-top:.35rem}
+.erro{
+  color:var(--alert);font-size:.85rem;margin:0 0 .8rem;padding:.6rem .8rem;
+  background:var(--alert-soft);border-radius:var(--radius-sm);
+  animation:balancar .3s ease;
+}
+.erro[hidden]{display:none}
+.rodape-painel{display:flex;justify-content:flex-end;gap:.55rem;padding-top:1rem;border-top:1px solid var(--line)}
+.nota{font-size:.78rem;color:var(--faint);margin:1.2rem .25rem 0;padding-top:.9rem;border-top:1px dashed var(--line)}
+
+.vazio{
+  margin-top:1.1rem;padding:1.1rem 1.2rem;border:1.5px dashed var(--line);border-radius:var(--radius);
+  color:var(--faint);font-size:.85rem;text-align:center;
+}
+.vazio[hidden]{display:none}
+
+@keyframes surgir{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes balancar{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s !important;transition-duration:.001s !important}
+}
+
+@media (max-width:640px){
+  header{align-items:flex-start}
+  .acessibilidade{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="marca">
+    <div>
+      <img src="imagens/iconeDaLoja.png" width="70px">
+    </div>
+    <div>
+      <h1>MiauStore-Estoque de eletrônicos</h1>
+      <p>
+        Trabalho de SQL
+      </p>
+    </div>
+  </div>
+
+  <div class="acessibilidade" role="group" aria-label="Acessibilidade">
+    <span class="rotulo">Tamanho do texto</span>
+    <div class="grupo">
+      <button id="fonte-menor" aria-label="Diminuir tamanho do texto">A−</button>
+      <button id="fonte-maior" aria-label="Aumentar tamanho do texto">A+</button>
+    </div>
+    <div class="grupo">
+      <button id="btn-tema" aria-pressed="false">☾ Modo escuro</button>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="grow"><input id="busca" type="search" placeholder="Buscar produto pelo nome" aria-label="Buscar produto pelo nome"></div>
+  <button class="primary" id="btn-novo">+ Novo produto</button>
+</div>
+
+<div class="panel-table">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:30%">Produto</th>
+        <th style="width:14%">Categoria</th>
+        <th style="width:12%">Marca</th>
+        <th class="r" style="width:12%">Preço venda</th>
+        <th class="r" style="width:9%">Estoque</th>
+        <th class="r" style="width:7%">Mínimo</th>
+        <th class="r" style="width:16%">Ações</th>
+      </tr>
+    </thead>
+    <tbody id="corpo"></tbody>
+  </table>
+  <div class="totais">
+    <span id="t-produtos">&nbsp;</span>
+    <span id="t-valor">&nbsp;</span>
+  </div>
+</div>
+
+<div class="legenda" aria-label="Legenda de cores">
+  <span class="titulo-legenda">Legenda</span>
+  <span class="item"><span class="ponto azul"></span>Celular</span>
+  <span class="item"><span class="ponto azulclaro"></span>Áudio</span>
+  <span class="item"><span class="ponto rosa"></span>Acessório</span>
+  <span class="item"><span class="ponto verde"></span>Notebook</span>
+  <span class="item"><span class="ponto alerta"></span>Estoque abaixo do mínimo</span>
+</div>
+
+<div class="vazio" id="vazio">Clique em uma ação da tabela para abrir o formulário aqui embaixo.</div>
+
+<section class="painel" id="painel" hidden aria-live="polite">
+  <div class="painel-topo">
+    <h2 id="painel-titulo"></h2>
+    <button id="btn-fechar" aria-label="Fechar formulário">&times;</button>
+  </div>
+  <div id="painel-corpo"></div>
+  <p class="erro" id="erro" hidden></p>
+  <div class="rodape-painel">
+    <button id="btn-cancelar">Cancelar</button>
+    <button class="primary" id="btn-confirmar"></button>
+  </div>
+</section>
+
+<p class="nota">
+  PROTOTIPO ESTATICO, NADA REALMENTE É GRAVADO!, apagar esse comentario apos o back end
+</p>
+
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// DADOS DE EXEMPLO
+// Na versão real isto vem do back-end em JSON, na rota de listagem de produtos.
+// O saldo NÃO é uma coluna do produto: vem da view que soma as movimentações, apagar esse comentario.
+// ---------------------------------------------------------------------------
+const categorias  = ["Notebook", "Celular", "Áudio", "Acessório"];
+const marcas      = ["Dell", "Samsung", "JBL", "Logitech", "Acer"];
+const fornecedores= ["Distribuidora Tech Sul", "Nova Import", "Eletro Atacado SP"];
+
+const motivosEntrada = ["Compra", "Devolução de cliente", "Ajuste de inventário"];
+const motivosSaida   = ["Venda", "Perda", "Ajuste de inventário"];
+
+// Mapeia cada categoria a uma cor da pílula (mesma paleta usada na legenda), apagar esse comentario..
+const corPorCategoria = { Celular:"azul", Áudio:"azulclaro", Acessório:"rosa", Notebook:"verde" };
+
+const produtos = [
+  { id:1, nome:"Notebook Dell Inspiron 15", categoria:"Notebook",  marca:"Dell",     custo:2800.00, venda:3499.00, saldo:12, minimo:5  },
+  { id:2, nome:"Celular Samsung Galaxy S24", categoria:"Celular",   marca:"Samsung",  custo:3400.00, venda:4199.00, saldo:2,  minimo:8  },
+  { id:3, nome:"Fone JBL Tune 510 Preto",    categoria:"Áudio",     marca:"JBL",      custo:120.00,  venda:199.00,  saldo:47, minimo:15 },
+  { id:4, nome:"Mouse Logitech M170",        categoria:"Acessório", marca:"Logitech", custo:42.00,   venda:79.90,   saldo:33, minimo:10 },
+  { id:5, nome:"Notebook Acer Aspire 5",     categoria:"Notebook",  marca:"Acer",     custo:2100.00, venda:2799.00, saldo:4,  minimo:6  },
+  { id:6, nome:"Carregador Turbo 33W",       categoria:"Acessório", marca:"Samsung",  custo:35.00,   venda:89.90,   saldo:58, minimo:20 }
+];
+
+const brl = v => v.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+const opcoes = (lista, sel) => lista.map(o => `<option${o===sel?" selected":""}>${o}</option>`).join("");
+
+// ---------------------------------------------------------------------------
+// TABELA
+// ---------------------------------------------------------------------------
+function renderTabela() {
+  const termo = document.getElementById("busca").value.trim().toLowerCase();
+  const lista = produtos.filter(p => p.nome.toLowerCase().includes(termo));
+
+  document.getElementById("corpo").innerHTML = lista.map(p => {
+    const baixo = p.saldo < p.minimo;
+    const cor = corPorCategoria[p.categoria] || "azul";
+    return `
+      <tr class="${baixo ? "baixo" : ""}">
+        <td>${p.nome}${baixo ? '<span class="flag">abaixo do mínimo</span>' : ""}</td>
+        <td><span class="chip chip-${cor}">${p.categoria}</span></td>
+        <td class="sub">${p.marca}</td>
+        <td class="r num">${brl(p.venda)}</td>
+        <td class="r num saldo">${p.saldo}</td>
+        <td class="r num sub">${p.minimo}</td>
+        <td class="acoes">
+          <button data-acao="entrada"  data-id="${p.id}" title="Registrar entrada" aria-label="Registrar entrada de ${p.nome}">&darr; Entrada</button>
+          <button data-acao="saida"    data-id="${p.id}" title="Registrar saída"   aria-label="Registrar saída de ${p.nome}">&uarr; Saída</button>
+          <button data-acao="editar"   data-id="${p.id}" title="Editar"            aria-label="Editar ${p.nome}">Editar</button>
+          <button data-acao="desativar" class="dan" data-id="${p.id}" title="Desativar" aria-label="Desativar ${p.nome}">Desativar</button>
+        </td>
+      </tr>`;
+  }).join("") || `<tr><td colspan="7" class="sub" style="padding:1.5rem .9rem">Nenhum produto encontrado.</td></tr>`;
+
+  // Consulta 2 — valor imobilizado (saldo x preço de custo).apagar esse comentario.
+  const valor = produtos.reduce((s, p) => s + p.saldo * p.custo, 0);
+  document.getElementById("t-produtos").innerHTML =
+    `<strong>${produtos.length}</strong> produtos ativos &middot; <strong>${produtos.filter(p=>p.saldo<p.minimo).length}</strong> abaixo do mínimo`;
+  document.getElementById("t-valor").innerHTML =
+    `Valor imobilizado em estoque: <strong class="num">${brl(valor)}</strong>`;
+}
+
+// ---------------------------------------------------------------------------
+// PAINEL — um só, troca de conteúdo conforme a ação, apagar esse comentario.
+// ---------------------------------------------------------------------------
+const painel   = document.getElementById("painel");
+const vazio    = document.getElementById("vazio");
+const titulo   = document.getElementById("painel-titulo");
+const corpo    = document.getElementById("painel-corpo");
+const erro     = document.getElementById("erro");
+const confirmar= document.getElementById("btn-confirmar");
+let estado = null;
+
+function formProduto(p) {
+  return `
+    <div class="grid">
+      <div>
+        <label for="f-nome">Nome</label>
+        <input id="f-nome" type="text" value="${p ? p.nome : ""}" placeholder="Notebook Dell Inspiron 15">
+        <p class="dica">Precisa ser único — é o nome que identifica o produto.</p>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div><label for="f-cat">Categoria</label><select id="f-cat">${opcoes(categorias, p && p.categoria)}</select></div>
+      <div><label for="f-marca">Marca</label><select id="f-marca">${opcoes(marcas, p && p.marca)}</select></div>
+    </div>
+    <div class="grid g3">
+      <div><label for="f-custo">Preço de custo</label><input id="f-custo" type="number" step="0.01" value="${p ? p.custo : ""}" placeholder="2800,00"></div>
+      <div><label for="f-venda">Preço de venda</label><input id="f-venda" type="number" step="0.01" value="${p ? p.venda : ""}" placeholder="3499,00"></div>
+      <div><label for="f-min">Estoque mínimo</label><input id="f-min" type="number" value="${p ? p.minimo : ""}" placeholder="5"></div>
+    </div>
+    <p class="dica">Não existe campo de quantidade inicial: o estoque nasce em zero e sobe com a primeira entrada.</p>`;
+}
+
+function formMovimentacao(p, tipo) {
+  const motivos = tipo === "entrada" ? motivosEntrada : motivosSaida;
+  return `
+    <div class="contexto">
+      ${p.nome} &middot; estoque atual <strong class="num">${p.saldo}</strong>
+    </div>
+    <div class="grid g2">
+      <div><label for="f-qtd">Quantidade</label><input id="f-qtd" type="number" min="1" value="1"></div>
+      <div><label for="f-motivo">Motivo</label><select id="f-motivo">${opcoes(motivos)}</select></div>
+    </div>
+    <div class="grid" id="bloco-forn" ${tipo === "entrada" ? "" : "hidden"}>
+      <div>
+        <label for="f-forn">Fornecedor</label>
+        <select id="f-forn">${opcoes(fornecedores)}</select>
+        <p class="dica">Obrigatório apenas quando o motivo é compra.</p>
+      </div>
+    </div>`;
+}
+
+function abrir(acao, id) {
+  const p = produtos.find(x => x.id === id);
+  estado = { acao, id };
+  erro.hidden = true;
+
+  if (acao === "novo")       { titulo.textContent = "Novo produto";        corpo.innerHTML = formProduto(null); confirmar.textContent = "Salvar produto"; }
+  if (acao === "editar")     { titulo.textContent = "Editar produto";      corpo.innerHTML = formProduto(p);    confirmar.textContent = "Salvar alterações"; }
+  if (acao === "entrada")    { titulo.textContent = "Registrar entrada";   corpo.innerHTML = formMovimentacao(p, "entrada"); confirmar.textContent = "Confirmar entrada"; }
+  if (acao === "saida")      { titulo.textContent = "Registrar saída";     corpo.innerHTML = formMovimentacao(p, "saida");   confirmar.textContent = "Confirmar saída"; }
+  if (acao === "desativar")  {
+    titulo.textContent = "Desativar produto";
+    corpo.innerHTML = `<div class="contexto">${p.nome}</div>
+      <p class="dica">O produto sai da lista mas continua no banco. O histórico de movimentações é preservado — por isso desativamos em vez de excluir.</p>`;
+    confirmar.textContent = "Desativar";
+  }
+
+  // Fornecedor só aparece quando o motivo da entrada é compra.
+  const motivo = document.getElementById("f-motivo");
+  if (motivo && acao === "entrada") {
+    motivo.addEventListener("change", () => {
+      document.getElementById("bloco-forn").hidden = motivo.value !== "Compra";
+    });
+  }
+
+  painel.style.animation = "none";
+  painel.offsetHeight;
+  painel.style.animation = "";
+
+  painel.hidden = false;
+  vazio.hidden = true;
+  painel.scrollIntoView({ behavior:"smooth", block:"nearest" });
+}
+
+function fechar() {
+  painel.hidden = true;
+  vazio.hidden = false;
+  estado = null;
+}
+
+// ---------------------------------------------------------------------------
+// AÇÕES — aqui entram as chamadas ao back-end, apagar esse comentario.
+// ---------------------------------------------------------------------------
+confirmar.addEventListener("click", () => {
+  const qtd = document.getElementById("f-qtd");
+  const nome = document.getElementById("f-nome");
+
+  if (nome && !nome.value.trim()) {
+    erro.textContent = "Informe o nome do produto.";
+    erro.style.animation = "none";
+    erro.offsetHeight;
+    erro.style.animation = "";
+    erro.hidden = false;
+    return;
+  }
+  if (qtd && (!qtd.value || Number(qtd.value) < 1)) {
+    erro.textContent = "A quantidade precisa ser maior que zero.";
+    erro.style.animation = "none";
+    erro.offsetHeight;
+    erro.style.animation = "";
+    erro.hidden = false;
+    return;
+  }
+
+  // AQUI: enviar ao back-end e, com a resposta, chamar renderTabela() de novo.
+  //   novo/editar  -> rota de produto
+  //   entrada/saida -> rota de movimentação (o back valida o saldo)
+  //   desativar     -> rota que marca ativo = 0
+  // O erro devolvido pelo back (ex.: "saldo insuficiente") aparece no elemento #erro., apagar esse comentario.
+
+  fechar();
+});
+
+document.getElementById("corpo").addEventListener("click", e => {
+  const b = e.target.closest("button[data-acao]");
+  if (b) abrir(b.dataset.acao, Number(b.dataset.id));
+});
+document.getElementById("btn-novo").addEventListener("click", () => abrir("novo", null));
+document.getElementById("btn-fechar").addEventListener("click", fechar);
+document.getElementById("btn-cancelar").addEventListener("click", fechar);
+document.getElementById("busca").addEventListener("input", renderTabela);
+
+renderTabela();
+
+// ---------------------------------------------------------------------------
+// ACESSIBILIDADE — tamanho de texto e tema, independentes do back-end, apagar esse comentario.
+// ---------------------------------------------------------------------------
+const tamanhos = [14, 16, 18, 20]; // px, refletido em todo o layout via rem, apagar esse comentario.
+let indiceTamanho = 0;
+const btnFonteMenor = document.getElementById("fonte-menor");
+const btnFonteMaior = document.getElementById("fonte-maior");
+
+function aplicarTamanho() {
+  document.documentElement.style.fontSize = tamanhos[indiceTamanho] + "px";
+  btnFonteMenor.disabled = indiceTamanho === 0;
+  btnFonteMaior.disabled = indiceTamanho === tamanhos.length - 1;
+}
+btnFonteMaior.addEventListener("click", () => {
+  if (indiceTamanho < tamanhos.length - 1) { indiceTamanho++; aplicarTamanho(); }
+});
+btnFonteMenor.addEventListener("click", () => {
+  if (indiceTamanho > 0) { indiceTamanho--; aplicarTamanho(); }
+});
+aplicarTamanho();
+
+const btnTema = document.getElementById("btn-tema");
+let escuro = false;
+btnTema.addEventListener("click", () => {
+  escuro = !escuro;
+  document.documentElement.setAttribute("data-tema", escuro ? "escuro" : "claro");
+  btnTema.setAttribute("aria-pressed", String(escuro));
+  btnTema.textContent = escuro ? "☀ Modo claro" : "☾ Modo escuro";
+});
+</script>
+</body>
+</html>
