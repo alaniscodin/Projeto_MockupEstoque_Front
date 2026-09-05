@@ -88,11 +88,9 @@ header{
   padding-bottom:1.1rem;margin-bottom:1.3rem;border-bottom:1px solid var(--line);
 }
 .marca{display:flex;align-items:center;gap:.7rem}
-.monograma{
-  width:2.4rem;height:2.4rem;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  background:var(--accent-soft);color:var(--accent);
-  font-family:"Fraunces",serif;font-weight:600;font-size:1.15rem;
+.marca img{
+  width:2.6rem;height:2.6rem;object-fit:contain;
+  border-radius:var(--radius-sm);flex-shrink:0;
 }
 header h1{margin:0;font-family:"Fraunces",serif;font-weight:600;font-size:1.6rem;letter-spacing:-.01em}
 header p{margin:.15rem 0 0;color:var(--muted);font-size:.85rem}
@@ -162,12 +160,12 @@ tbody tr:last-child td{border-bottom:none}
 .r{text-align:right}
 .sub{color:var(--faint);font-size:.85rem}
 
-tr.baixo td{background:var(--alert-soft)}
-tr.baixo:hover td{filter:brightness(0.97)}
+tr.baixo{background:var(--alert-soft)}
+tr.baixo:hover{filter:brightness(0.97)}
 tr.baixo .saldo{color:var(--alert);font-weight:600}
 .flag{
-  display:inline-block;margin-left:.45rem;font-size:.7rem;color:var(--alert);
-  border:1px solid var(--alert);border-radius:var(--pill);padding:.1rem .55rem;vertical-align:1px;
+  display:inline-block;margin-left:.45rem;font-size:.7rem;font-weight:600;color:#fff;
+  background:var(--alert);border-radius:var(--pill);padding:.18rem .65rem;vertical-align:1px;
 }
 
 /* ---------- "categoria" ---------- */
@@ -259,10 +257,53 @@ label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.3rem}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001s !important;transition-duration:.001s !important}
 }
-
+/* funcione em um celular ou telas estreitas! */
 @media (max-width:640px){
+  .wrap{padding:1.6rem 1rem 3rem}
   header{align-items:flex-start}
-  .acessibilidade{width:100%}
+  .acessibilidade{width:100%;justify-content:space-between}
+  .acessibilidade button{padding:.55rem .8rem}
+
+  .toolbar{flex-direction:column;align-items:stretch}
+  .toolbar .grow{min-width:0}
+  #btn-novo{width:100%;min-height:2.9rem}
+
+  /* a tabela vira uma lista de cartões- modificado para que fique agravel aos olhos, nao um monte de caixa apertada. */
+  thead{display:none}
+  table,tbody,tr,td{display:block;width:100%}
+  tbody tr{
+    padding:.95rem 1rem;margin-bottom:.7rem;
+    border:1px solid var(--line);border-radius:var(--radius-sm);
+    background:var(--surface);
+  }
+  tbody tr:last-child{margin-bottom:0}
+  tr.baixo{border-color:var(--alert)}
+
+  td{border:none;padding:.28rem 0;text-align:left}
+  td.r{text-align:left}
+  td[data-label]{display:flex;justify-content:space-between;align-items:center;gap:.8rem}
+  td[data-label]::before{
+    content:attr(data-label);font-size:.72rem;color:var(--faint);font-weight:500;flex-shrink:0;
+  }
+  /* nome do produto vira o "título" do cartão, sem rótulo */
+  td:first-child{
+    font-weight:500;padding-bottom:.55rem;margin-bottom:.35rem;
+    border-bottom:1px dashed var(--line);
+  }
+  td:first-child .flag{
+    display:block;width:fit-content;margin:.4rem 0 0;
+  }
+  /* ações ocupam a largura toda, em botões grandes o bastante pro dedo */
+  td.acoes{padding-top:.6rem}
+  td.acoes::before{display:none}
+  .acoes{display:flex;flex-wrap:wrap;gap:.5rem;text-align:left}
+  .acoes button{
+    flex:1 1 calc(50% - .25rem);min-height:2.7rem;font-size:.82rem;
+    border-width:1.5px;border-color:var(--faint);
+  }
+  /* painel de formulário: botões grandes e empilhados, ação principal em cima */
+  .rodape-painel{flex-direction:column-reverse;gap:.6rem}
+  .rodape-painel button{width:100%;min-height:2.8rem}
 }
 </style>
 </head>
@@ -272,7 +313,7 @@ label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.3rem}
 <header>
   <div class="marca">
     <div>
-      <img src="imagens/iconeDaLoja.png" width="70px">
+      <img src="imagens/iconeDaLoja.png" alt="Logo da MiauStore">
     </div>
     <div>
       <h1>MiauStore-Estoque de eletrônicos</h1>
@@ -345,17 +386,13 @@ label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.3rem}
 </section>
 
 <p class="nota">
-  PROTOTIPO ESTATICO, NADA REALMENTE É GRAVADO!, apagar esse comentario apos o back end
+  Protótipo estático — os dados são de exemplo, nada é gravado ainda.
 </p>
 
 </div>
 
 <script>
-// ---------------------------------------------------------------------------
-// DADOS DE EXEMPLO
-// Na versão real isto vem do back-end em JSON, na rota de listagem de produtos.
-// O saldo NÃO é uma coluna do produto: vem da view que soma as movimentações, apagar esse comentario.
-// ---------------------------------------------------------------------------
+  
 const categorias  = ["Notebook", "Celular", "Áudio", "Acessório"];
 const marcas      = ["Dell", "Samsung", "JBL", "Logitech", "Acer"];
 const fornecedores= ["Distribuidora Tech Sul", "Nova Import", "Eletro Atacado SP"];
@@ -363,7 +400,6 @@ const fornecedores= ["Distribuidora Tech Sul", "Nova Import", "Eletro Atacado SP
 const motivosEntrada = ["Compra", "Devolução de cliente", "Ajuste de inventário"];
 const motivosSaida   = ["Venda", "Perda", "Ajuste de inventário"];
 
-// Mapeia cada categoria a uma cor da pílula (mesma paleta usada na legenda), apagar esse comentario..
 const corPorCategoria = { Celular:"azul", Áudio:"azulclaro", Acessório:"rosa", Notebook:"verde" };
 
 const produtos = [
@@ -391,12 +427,12 @@ function renderTabela() {
     return `
       <tr class="${baixo ? "baixo" : ""}">
         <td>${p.nome}${baixo ? '<span class="flag">abaixo do mínimo</span>' : ""}</td>
-        <td><span class="chip chip-${cor}">${p.categoria}</span></td>
-        <td class="sub">${p.marca}</td>
-        <td class="r num">${brl(p.venda)}</td>
-        <td class="r num saldo">${p.saldo}</td>
-        <td class="r num sub">${p.minimo}</td>
-        <td class="acoes">
+        <td data-label="Categoria"><span class="chip chip-${cor}">${p.categoria}</span></td>
+        <td data-label="Marca" class="sub">${p.marca}</td>
+        <td data-label="Preço venda" class="r num">${brl(p.venda)}</td>
+        <td data-label="Estoque" class="r num saldo">${p.saldo}</td>
+        <td data-label="Mínimo" class="r num sub">${p.minimo}</td>
+        <td class="acoes" data-label="Ações">
           <button data-acao="entrada"  data-id="${p.id}" title="Registrar entrada" aria-label="Registrar entrada de ${p.nome}">&darr; Entrada</button>
           <button data-acao="saida"    data-id="${p.id}" title="Registrar saída"   aria-label="Registrar saída de ${p.nome}">&uarr; Saída</button>
           <button data-acao="editar"   data-id="${p.id}" title="Editar"            aria-label="Editar ${p.nome}">Editar</button>
@@ -405,7 +441,6 @@ function renderTabela() {
       </tr>`;
   }).join("") || `<tr><td colspan="7" class="sub" style="padding:1.5rem .9rem">Nenhum produto encontrado.</td></tr>`;
 
-  // Consulta 2 — valor imobilizado (saldo x preço de custo).apagar esse comentario.
   const valor = produtos.reduce((s, p) => s + p.saldo * p.custo, 0);
   document.getElementById("t-produtos").innerHTML =
     `<strong>${produtos.length}</strong> produtos ativos &middot; <strong>${produtos.filter(p=>p.saldo<p.minimo).length}</strong> abaixo do mínimo`;
@@ -413,9 +448,6 @@ function renderTabela() {
     `Valor imobilizado em estoque: <strong class="num">${brl(valor)}</strong>`;
 }
 
-// ---------------------------------------------------------------------------
-// PAINEL — um só, troca de conteúdo conforme a ação, apagar esse comentario.
-// ---------------------------------------------------------------------------
 const painel   = document.getElementById("painel");
 const vazio    = document.getElementById("vazio");
 const titulo   = document.getElementById("painel-titulo");
@@ -503,9 +535,6 @@ function fechar() {
   estado = null;
 }
 
-// ---------------------------------------------------------------------------
-// AÇÕES — aqui entram as chamadas ao back-end, apagar esse comentario.
-// ---------------------------------------------------------------------------
 confirmar.addEventListener("click", () => {
   const qtd = document.getElementById("f-qtd");
   const nome = document.getElementById("f-nome");
@@ -527,12 +556,6 @@ confirmar.addEventListener("click", () => {
     return;
   }
 
-  // AQUI: enviar ao back-end e, com a resposta, chamar renderTabela() de novo.
-  //   novo/editar  -> rota de produto
-  //   entrada/saida -> rota de movimentação (o back valida o saldo)
-  //   desativar     -> rota que marca ativo = 0
-  // O erro devolvido pelo back (ex.: "saldo insuficiente") aparece no elemento #erro., apagar esse comentario.
-
   fechar();
 });
 
@@ -547,10 +570,7 @@ document.getElementById("busca").addEventListener("input", renderTabela);
 
 renderTabela();
 
-// ---------------------------------------------------------------------------
-// ACESSIBILIDADE — tamanho de texto e tema, independentes do back-end, apagar esse comentario.
-// ---------------------------------------------------------------------------
-const tamanhos = [14, 16, 18, 20]; // px, refletido em todo o layout via rem, apagar esse comentario.
+const tamanhos = [14, 16, 18, 20];
 let indiceTamanho = 0;
 const btnFonteMenor = document.getElementById("fonte-menor");
 const btnFonteMaior = document.getElementById("fonte-maior");
