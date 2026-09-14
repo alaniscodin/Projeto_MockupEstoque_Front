@@ -20,6 +20,5 @@
 
 - HTML
 - CSS
-- JavaScript
 - SQL (conceito do projeto)
 
