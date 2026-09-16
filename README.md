@@ -16,7 +16,7 @@
 - Modo claro e escuro;
 - Interface responsiva.
 
-#### Tecnologias
+#### Tecnologias para o Front-end
 
 - HTML
 - CSS
